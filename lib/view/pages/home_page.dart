@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/presenter/controllers/game_controller.dart';
-import 'package:tic_tac_toe/presenter/widgets/campo.dart';
+import 'package:tic_tac_toe/view/widgets/campo.dart';
+import 'package:tic_tac_toe/view_model/game_type_abstract.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class HomePage extends StatefulWidget {
+  final String userName;
+  final String tableName;
+
+  const HomePage({super.key, required this.userName, required this.tableName});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MainPageState extends State<MainPage> {
-  final GameController controller = GameController();
+class _HomePageState extends State<HomePage> {
+  // late GameTypeAbstract controller;
+  late GameTypeAbstract controller;
 
   @override
   void initState() {
+    controller = GameTypeAbstract();
+    controller.tableName = widget.tableName;
+    debugPrint('init-tableName: ${controller.tableName}');
     controller.getDados();
     super.initState();
   }
@@ -27,11 +34,8 @@ class _MainPageState extends State<MainPage> {
           child: Column(
             children: [
               Table(
-                border: TableBorder.symmetric(
-                  inside: const BorderSide(
-                    color: Colors.black,
-                    width: 3,
-                  ),
+                border: const TableBorder.symmetric(
+                  inside: BorderSide(color: Colors.black, width: 3),
                   outside: BorderSide.none,
                 ),
                 children: [

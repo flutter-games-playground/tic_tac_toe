@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/presenter/controllers/game_controller.dart';
+import 'package:tic_tac_toe/core/constants/stats_enum.dart';
+import 'package:tic_tac_toe/view_model/game_type_abstract.dart';
 
 class Campo extends StatefulWidget {
-  final GameController controller;
+  final GameTypeAbstract controller;
 
   const Campo({super.key, required this.controller});
 
@@ -11,8 +12,8 @@ class Campo extends StatefulWidget {
 }
 
 class _CampoState extends State<Campo> {
-  late Color _color;
-  late Color _textColor;
+  late Color _color = Theme.of(context).scaffoldBackgroundColor;
+  late Color _textColor = Colors.black;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,11 @@ class _CampoState extends State<Campo> {
         child: AnimatedBuilder(
           animation: widget.controller,
           builder: (BuildContext context, Widget? child) {
-            if (!([StatusEnum.sDraw, StatusEnum.sNothing, StatusEnum.sRestart].contains(widget.controller.currentStatus))) {
+            if (!([
+              StatusEnum.sDraw,
+              StatusEnum.sNothing,
+              StatusEnum.sRestart,
+            ].contains(widget.controller.currentStatus))) {
               if (widget.controller.fieldsWin.contains(key)) {
                 _color = Colors.red;
                 _textColor = Colors.white;
@@ -45,13 +50,7 @@ class _CampoState extends State<Campo> {
               height: 170,
               color: _color,
               child: Center(
-                child: Text(
-                  widget.controller.getCampo(key),
-                  style: TextStyle(
-                    fontSize: 64,
-                    color: _textColor,
-                  ),
-                ),
+                child: Text(widget.controller.getCampo(key), style: TextStyle(fontSize: 64, color: _textColor)),
               ),
             );
           },
