@@ -16,19 +16,5 @@ void main() async {
 
   sharedPreferences = await SharedPreferences.getInstance();
 
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      routes: {
-        '/': (context) => const MainPage(),
-      },
-      initialRoute: '/',
-    );
-  }
+  runApp(const MainPage());
 }
