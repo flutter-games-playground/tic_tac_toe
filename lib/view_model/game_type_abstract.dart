@@ -3,17 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/core/constants/field_enum.dart';
 import 'package:tic_tac_toe/core/constants/stats_enum.dart';
 
-class GameTypeAbstract extends ChangeNotifier {
+sealed class GameTypeAbstract extends ChangeNotifier {
   String tableName = '';
   FieldEnum currentValue = FieldEnum.cNenhum;
   StatusEnum currentStatus = StatusEnum.sNothing;
   final List<int> fieldsWin = [];
   final database = FirebaseDatabase.instance.ref();
-
-  // GameTypeAbstract({required this.tableName}) {
-  //   debugPrint('create');
-  //   // createGame();
-  // }
 
   final Map<int, FieldEnum> table = {
     1: FieldEnum.cNenhum,
@@ -27,12 +22,7 @@ class GameTypeAbstract extends ChangeNotifier {
     9: FieldEnum.cNenhum,
   };
 
-  void createGame() {
-    // database.child(tableName).set('');
-  }
-
   void getDados() {
-    debugPrint('tableName: $tableName');
     database.child(tableName).child('currentStatus').onValue.listen((event) {
       currentStatus = StatusEnum.values[int.parse(event.snapshot.value.toString())];
       if ([StatusEnum.sNothing, StatusEnum.sRestart].contains(currentStatus)) {
@@ -70,13 +60,9 @@ class GameTypeAbstract extends ChangeNotifier {
     database.child(tableName).child('fields').set('');
   }
 
-  void setCampo(int key) async {
-    database.child(tableName).child('fields').child('$key').set(currentValue.name);
-    database.child(tableName).child('currentValue').set(currentValue.name);
-  }
+  void setCampo(int key) async {}
 
   String getCampo(int key) {
-    debugPrint('getcampo: $key');
     return table[key]!.name;
   }
 
@@ -105,5 +91,83 @@ class GameTypeAbstract extends ChangeNotifier {
     condiction(1, 4, 7);
     condiction(2, 5, 8);
     condiction(3, 6, 9);
+  }
+}
+
+class GameTypeNormal extends GameTypeAbstract {
+  @override
+  void setCampo(int key) async {
+    database.child(tableName).child('fields').child('$key').set(currentValue.name);
+    database.child(tableName).child('currentValue').set(currentValue.name);
+  }
+}
+
+class GameTypeInfinity extends GameTypeAbstract {
+  @override
+  void getDados() {
+    super.getDados();
+
+    database.child(tableName).child('circleFields').onChildChanged.listen((event) {
+      if (event.snapshot.value.toString() == '') {
+        circleFields.clear();
+      } else if (int.parse(event.snapshot.key.toString()) == 0) {
+        circleFields.insert(0, int.parse(event.snapshot.value.toString()));
+        if (circleFields.length > 3) {
+          circleFields.removeAt(3);
+        }
+        for (var i = 1; i < circleFields.length; i++) {
+          database.child(tableName).child('circleFields').child('$i').set(circleFields[i]);
+        }
+      }
+      notifyListeners();
+    });
+    database.child(tableName).child('crossFields').onChildChanged.listen((event) {
+      if (event.snapshot.value.toString() == '') {
+        crossFields.clear();
+      } else if (int.parse(event.snapshot.key.toString()) == 0) {
+        crossFields.insert(0, int.parse(event.snapshot.value.toString()));
+        if (crossFields.length > 3) {
+          crossFields.removeAt(3);
+        }
+        for (var i = 1; i < crossFields.length; i++) {
+          database.child(tableName).child('crossFields').child('$i').set(crossFields[i]);
+        }
+      }
+      notifyListeners();
+    });
+  }
+
+  void limpar() {
+    for (var i = 0; i < 3; i++) {
+      database.child(tableName).child('crossFields').child('$i').set('');
+      database.child(tableName).child('circleFields').child('$i').set('');
+    }
+  }
+
+  @override
+  void zerarJogo() {
+    super.zerarJogo();
+    limpar();
+  }
+
+  final List<int> crossFields = [];
+  final List<int> circleFields = [];
+
+  @override
+  void setCampo(int key) async {
+    if (currentValue == FieldEnum.cCruz) {
+      if (crossFields.length >= 3) {
+        database.child(tableName).child('fields').child(crossFields[2].toString()).set('');
+      }
+      database.child(tableName).child('crossFields').child('0').set(key);
+    } else if (currentValue == FieldEnum.cCirculo) {
+      if (circleFields.length >= 3) {
+        database.child(tableName).child('fields').child(circleFields[2].toString()).set('');
+      }
+      database.child(tableName).child('circleFields').child('0').set(key);
+    }
+
+    database.child(tableName).child('fields').child('$key').set(currentValue.name);
+    database.child(tableName).child('currentValue').set(currentValue.name);
   }
 }
