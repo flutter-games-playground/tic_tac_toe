@@ -25,7 +25,7 @@ RouteFactory customGenerateRoute = (settings) {
     if (tableName.isNotEmpty && userName.isNotEmpty) {
       return MaterialPageRoute(
         builder: (context) {
-          return const HomePage(userName: '', tableName: '');
+          return HomePage(userName: userName, tableName: tableName);
         },
       );
     }
