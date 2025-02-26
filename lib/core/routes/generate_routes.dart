@@ -7,7 +7,7 @@ RouteFactory customGenerateRoute = (settings) {
   final uri = Uri.parse(settings.name!);
   final queryParameters = uri.queryParametersAll;
 
-  final tableName = queryParameters['id']?.first ?? '';
+  final tableName = queryParameters['table']?.first ?? '';
   final userName = sharedPreferences.getString('userName') ?? '';
 
   if (uri.path == '/') {

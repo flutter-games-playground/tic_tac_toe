@@ -101,7 +101,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: FilledButton(
                   onPressed: () {
                     sharedPreferences.setString('userName', nameController.text);
-                    Navigator.of(context).pushNamed('/?id=${tableController.text}');
+                    Navigator.of(context).pushNamed('/?table=${tableController.text}');
                   },
                   child: const Text('Entrar'),
                 ),
