@@ -66,6 +66,10 @@ sealed class GameTypeAbstract extends ChangeNotifier {
     return table[key]!.name;
   }
 
+  bool isLast(int key) {
+    return false;
+  }
+
   bool condiction(int a, int b, int c) {
     final List first = [table[a], table[b], table[c]];
 
@@ -142,6 +146,12 @@ class GameTypeInfinity extends GameTypeAbstract {
       database.child(tableName).child('crossFields').child('$i').set('');
       database.child(tableName).child('circleFields').child('$i').set('');
     }
+  }
+
+  @override
+  bool isLast(int key) {
+    return (((crossFields.length > 2) && (crossFields[2] == key)) ||
+        ((circleFields.length > 2) && (circleFields[2] == key)));
   }
 
   @override

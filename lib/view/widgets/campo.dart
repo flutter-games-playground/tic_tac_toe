@@ -32,6 +32,7 @@ class _CampoState extends State<Campo> {
         child: AnimatedBuilder(
           animation: widget.controller,
           builder: (BuildContext context, Widget? child) {
+            final isLast = widget.controller.isLast(key);
             if (!([
               StatusEnum.sDraw,
               StatusEnum.sNothing,
@@ -43,7 +44,7 @@ class _CampoState extends State<Campo> {
               }
             } else {
               _color = Theme.of(context).scaffoldBackgroundColor;
-              _textColor = Colors.black;
+              _textColor = Colors.black.withAlpha(isLast ? 128 : 255);
             }
             return Container(
               width: 50,
